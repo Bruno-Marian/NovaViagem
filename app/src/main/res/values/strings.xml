@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">TelaDeNovaViagem</string>
+    <string name="destino">Destino</string>
+    <string name="tipoViagem">Tipo de viagem</string>
+    <string name="lazer">Lazer</string>
+    <string name="negocios">Negócios</string>
+</resources>
