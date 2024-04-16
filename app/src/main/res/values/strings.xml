@@ -4,4 +4,7 @@
     <string name="tipoViagem">Tipo de viagem</string>
     <string name="lazer">Lazer</string>
     <string name="negocios">Negócios</string>
+    <string name="orcamento">Orçamento</string>
+    <string name="dataInicial">Data início</string>
+    <string name="dataFinal">Data final</string>
 </resources>
