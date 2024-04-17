@@ -9,14 +9,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -25,9 +27,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.senac.teladenovaviagem.components.LabelComponent
@@ -35,8 +39,8 @@ import com.senac.teladenovaviagem.components.MyTopBar
 import com.senac.teladenovaviagem.model.TipoViagem
 import com.senac.teladenovaviagem.ui.theme.TelaDeNovaViagemTheme
 import com.senac.teladenovaviagem.viewmodel.ViagemViewModel
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
@@ -61,7 +65,11 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Myapp(){
+    val snackbarHostState = remember { SnackbarHostState() }
     Scaffold (
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
         topBar = {
             MyTopBar()
         }
@@ -71,7 +79,7 @@ fun Myapp(){
                 .padding(it)
                 .padding(16.dp)
         ) {
-            Content()
+            Content(snackbarHostState)
         }
     }
 }
@@ -80,9 +88,10 @@ fun Myapp(){
 @SuppressLint("SimpleDateFormat")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun Content(viagemViewModel: ViagemViewModel = viewModel()){
+private fun Content(snackbarHostState: SnackbarHostState, viagemViewModel: ViagemViewModel = viewModel()){
     val viagemState = viagemViewModel.uiState.collectAsState()
 
+    val scope = rememberCoroutineScope()
     Row (
         verticalAlignment = Alignment.CenterVertically
     ){
@@ -230,9 +239,25 @@ private fun Content(viagemViewModel: ViagemViewModel = viewModel()){
         TextField(
             value = viagemState.value.orcamento.toString(),
             onValueChange = { viagemViewModel.updateOrcamento(it.toFloat()) },
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
             modifier = Modifier.weight(4f)
                 .padding(top = 10.dp)
         )
+    }
+
+    Row {
+        Button(
+            onClick = {
+                scope.launch {
+                    snackbarHostState.showSnackbar("Viagem registrada com sucesso!")
+                }
+            },
+            modifier = Modifier.weight(4f)
+                .padding(top = 10.dp)
+                .align(Alignment.CenterVertically)
+
+        )
+        {Text("Salvar")}
     }
 }
 
